@@ -368,10 +368,10 @@ struct xhdmirx_state {
 	u8 *edid_user;
 	int edid_user_blocks;
 	int edid_blocks_max;
-	u16 edid_ram_size;
-	u8 max_ppc;
-	u8 max_bpc;
-	u8 max_frl_rate;
+	u32 edid_ram_size;
+	u32 max_ppc;
+	u32 max_bpc;
+	u32 max_frl_rate;
 	u8 hdmi_stream_up;
 	bool isstreamup;
 };
@@ -3045,7 +3045,7 @@ static int xhdmirx_parse_of(struct xhdmirx_state *xhdmi)
 	struct device *dev = xhdmi->dev;
 	int ret;
 
-	ret = of_property_read_u16(node, "xlnx,edid-ram-size",
+	ret = of_property_read_u32(node, "xlnx,edid-ram-size",
 				   &xhdmi->edid_ram_size);
 	if (ret) {
 		dev_err(dev, "xlnx,edid-ram-size property not found.\n");
@@ -3061,7 +3061,7 @@ static int xhdmirx_parse_of(struct xhdmirx_state *xhdmi)
 
 	xhdmi->edid_blocks_max = xhdmi->edid_ram_size / XEDID_BLOCK_SIZE;
 
-	ret = of_property_read_u8(node, "xlnx,input-pixels-per-clock",
+	ret = of_property_read_u32(node, "xlnx,input-pixels-per-clock",
 				  &xhdmi->max_ppc);
 	if (ret) {
 		dev_err(dev, "xlnx,input-pixels-per-clock property not found.\n");
@@ -3074,7 +3074,7 @@ static int xhdmirx_parse_of(struct xhdmirx_state *xhdmi)
 		return -EINVAL;
 	}
 
-	ret = of_property_read_u8(node, "xlnx,max-bits-per-component",
+	ret = of_property_read_u32(node, "xlnx,max-bits-per-component",
 				  &xhdmi->max_bpc);
 	if (ret) {
 		dev_err(dev, "xlnx,max-bit-per-component property not found.\n");
@@ -3088,7 +3088,7 @@ static int xhdmirx_parse_of(struct xhdmirx_state *xhdmi)
 		return -EINVAL;
 	}
 
-	ret = of_property_read_u8(node, "xlnx,max-frl-rate",
+	ret = of_property_read_u32(node, "xlnx,max-frl-rate",
 				  &xhdmi->max_frl_rate);
 	if (ret) {
 		dev_err(dev, "xlnx,max-frl-rate property not found.\n");
