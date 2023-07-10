@@ -569,6 +569,7 @@ struct xlnx_hdmi {
 	struct delayed_work hdcp_cp_irq_work;
 	struct xlnx_hdcptx txhdcp;
 	int hdcp2x_timer_irq;
+	struct regmap *hdcpx_keymgmt_base;
 };
 
 enum xlnx_hdmitx_clks {
@@ -3283,7 +3284,16 @@ static int xlnx_hdmi_parse_of(struct xlnx_hdmi *hdmi)
 	config->bpc = bpc;
 
 	config->hdcp2x_enable = of_property_read_bool(node, "xlnx,include-hdcp-2-2");
-
+	
+	if (config->hdcp2x_enable) {
+		hdmi->hdcpx_keymgmt_base = syscon_regmap_lookup_by_phandle(node,
+									 "xlnx,hdcp2x-keymgmt");
+		if (IS_ERR(hdmi->hdcpx_keymgmt_base)) {
+			dev_err(hdmi->dev, "couldn't map hdcp2x Keymgmt registers\n");
+			return -ENODEV;
+		}
+	}
+	
 	ret = of_property_read_u32(node, "xlnx,vid-interface", &vid);
 	if (ret || (vid != HDMI_TX_AXI_STREAM && vid != HDMI_TX_NATIVE &&
 		    vid != HDMI_TX_NATIVE_IDE)) {
@@ -3459,7 +3469,7 @@ static int xlnx_hdcp_init(struct xlnx_hdmi *hdmi,
 						   hdmi->base + HDMI_HDCP2X_OFFSET,
 						   0, XHDCPTX_HDCP_2X,
 						   hdmi->stream.sink_max_lanes,
-						   XHDCP2X_TX_HDMI);
+						   XHDCP2X_TX_HDMI, hdmi->hdcpx_keymgmt_base);
 
 		if (IS_ERR(xhdcp->xhdcp2x)) {
 			dev_err(hdmi->dev, "failed to initialize HDCP2X module\n");
