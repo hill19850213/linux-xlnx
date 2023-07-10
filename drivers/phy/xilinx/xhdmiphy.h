@@ -1127,6 +1127,8 @@ u32 xhdmiphy_hdmi21_conf(struct xhdmiphy_dev *inst, enum dir dir, u64 linerate, 
 void xhdmiphy_clkdet_freq_reset(struct xhdmiphy_dev *inst, enum dir dir);
 u32 xhdmiphy_read(struct xhdmiphy_dev *inst, u32 addr);
 void xhdmiphy_write(struct xhdmiphy_dev *inst, u32 addr, u32 val);
+void xhdmiphy_set(struct xhdmiphy_dev *inst, u32 addr, u32 val);
+void xhdmiphy_clr(struct xhdmiphy_dev *inst, u32 addr, u32 val);
 
 struct gtpll_divs {
 	const u8 *m;
